@@ -1,0 +1,5 @@
+This challenge was interesting. The overflow didn't allow for us to write a large enough rop chain, so we had to pivot the stack to another location. Fortunately, the program also let us write to a newly allocated memory region, so we could continue or stack there.
+
+What was interesting in this challenge was to change the value of RSP on the fly using the ROP chain to make it point to the new memory region so that our ROP chain may continue. 
+
+It was also interesting to enable our program (`pivot`) to call a function from an imported library (`libpivot`) that was not explicitely imported. To do so, we first called the `foothold_function` function once so that the `.got.plt` entry gets updated with the address of `foothold_function` in the library. This was necessary because the base address of the library changes time the program gets restarted/rerun, so our exploit had to be updated dynamically. So once the `.got.plt` entry got updated, we were able to extrat the newly written address, add the offset to our goal function (`ret2win`) and call the result. So basically, call \<foothold_function_addr_in_got_plt\> + \<offset_between_foothold_and_ret2win_in_lib\>
